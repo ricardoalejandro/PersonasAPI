@@ -6,7 +6,7 @@ services:
     container_name: dni-lookup-api
     restart: unless-stopped
     ports:
-      - "8000:8000"
+      - "8001:8001"
     volumes:
       # Persistir base de datos SQLite
       - dni_data:/app/data
@@ -19,7 +19,7 @@ services:
       - APISPERU_TOKEN=${APISPERU_TOKEN:-}
       - RATE_LIMIT_PER_IP=${RATE_LIMIT_PER_IP:-200}
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      test: ["CMD", "curl", "-f", "http://localhost:8001/health"]
       interval: 30s
       timeout: 10s
       retries: 3
