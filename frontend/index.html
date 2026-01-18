@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DNI Lookup - Sistema de Consulta de Personas</title>
+    <meta name="description" content="Sistema de consulta de DNI con caché local y API propia">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/css/styles.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Header -->
+        <header class="header">
+            <div class="logo">
+                <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
+                    <circle cx="9" cy="7" r="4"/>
+                    <path d="M22 21v-2a4 4 0 0 0-3-3.87"/>
+                    <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+                </svg>
+                <h1>DNI Lookup</h1>
+            </div>
+            <nav class="nav-tabs">
+                <button class="nav-tab active" data-tab="buscar">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="11" cy="11" r="8"/>
+                        <path d="m21 21-4.3-4.3"/>
+                    </svg>
+                    Buscar DNI
+                </button>
+                <button class="nav-tab" data-tab="tokens">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <rect width="18" height="11" x="3" y="11" rx="2" ry="2"/>
+                        <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+                    </svg>
+                    Tokens API
+                </button>
+                <button class="nav-tab" data-tab="config">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/>
+                        <circle cx="12" cy="12" r="3"/>
+                    </svg>
+                    Configuración
+                </button>
+            </nav>
+        </header>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Tab: Buscar DNI -->
+            <section id="tab-buscar" class="tab-content active">
+                <div class="search-section">
+                    <div class="card search-card">
+                        <h2>Consultar Persona por DNI</h2>
+                        <p class="subtitle">Ingrese el número de DNI para buscar los datos de la persona</p>
+                        
+                        <form id="search-form" class="search-form">
+                            <div class="input-group">
+                                <input 
+                                    type="text" 
+                                    id="dni-input" 
+                                    placeholder="Ingrese DNI (8 dígitos)"
+                                    maxlength="8"
+                                    pattern="[0-9]{8}"
+                                    required
+                                    autocomplete="off"
+                                >
+                                <button type="submit" class="btn btn-primary" id="search-btn">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <circle cx="11" cy="11" r="8"/>
+                                        <path d="m21 21-4.3-4.3"/>
+                                    </svg>
+                                    Buscar
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <!-- Resultado -->
+                    <div id="result-container" class="result-container hidden">
+                        <div class="card result-card">
+                            <div class="result-header">
+                                <h3>Resultado de la Búsqueda</h3>
+                                <span id="result-source" class="badge"></span>
+                            </div>
+                            <div id="result-content" class="result-content">
+                                <!-- Contenido dinámico -->
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Error -->
+                    <div id="error-container" class="error-container hidden">
+                        <div class="card error-card">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <circle cx="12" cy="12" r="10"/>
+                                <line x1="12" y1="8" x2="12" y2="12"/>
+                                <line x1="12" y1="16" x2="12.01" y2="16"/>
+                            </svg>
+                            <p id="error-message"></p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Tab: Tokens API -->
+            <section id="tab-tokens" class="tab-content">
+                <div class="tokens-section">
+                    <div class="card">
+                        <div class="card-header">
+                            <h2>Gestión de Tokens API</h2>
+                            <button class="btn btn-primary" id="new-token-btn">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <line x1="12" y1="5" x2="12" y2="19"/>
+                                    <line x1="5" y1="12" x2="19" y2="12"/>
+                                </svg>
+                                Nuevo Token
+                            </button>
+                        </div>
+                        <p class="subtitle">Crea tokens para que otras aplicaciones puedan consumir tu API</p>
+                        
+                        <div id="tokens-list" class="tokens-list">
+                            <!-- Tokens dinámicos -->
+                        </div>
+                        
+                        <div id="no-tokens" class="empty-state hidden">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round">
+                                <rect width="18" height="11" x="3" y="11" rx="2" ry="2"/>
+                                <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+                            </svg>
+                            <p>No hay tokens creados</p>
+                            <span>Crea tu primer token para empezar a usar la API</span>
+                        </div>
+                    </div>
+
+                    <!-- Documentación de uso -->
+                    <div class="card api-docs">
+                        <h3>Cómo usar la API</h3>
+                        <p>Envía un request GET con el token en el header Authorization:</p>
+                        <pre><code>curl -H "Authorization: Bearer TU_TOKEN" \
+     https://tu-dominio.com/api/persona/12345678</code></pre>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Tab: Configuración -->
+            <section id="tab-config" class="tab-content">
+                <div class="config-section">
+                    <div class="card">
+                        <h2>Configuración del Sistema</h2>
+                        <p class="subtitle">Configura el token de la API externa de apisperu.com</p>
+                        
+                        <form id="config-form" class="config-form">
+                            <div class="form-group">
+                                <label for="apisperu-token">Token de apisperu.com</label>
+                                <div class="input-with-status">
+                                    <input 
+                                        type="text" 
+                                        id="apisperu-token" 
+                                        placeholder="Ingrese el token de apisperu.com"
+                                    >
+                                    <span id="token-status" class="status-indicator"></span>
+                                </div>
+                                <small>Este token se usa para consultar la API externa cuando el DNI no está en la base de datos local</small>
+                            </div>
+                            <button type="submit" class="btn btn-primary">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/>
+                                    <polyline points="17 21 17 13 7 13 7 21"/>
+                                    <polyline points="7 3 7 8 15 8"/>
+                                </svg>
+                                Guardar Configuración
+                            </button>
+                        </form>
+                    </div>
+
+                    <div class="card info-card">
+                        <h3>Información del Sistema</h3>
+                        <ul class="info-list">
+                            <li>
+                                <span class="info-label">Versión:</span>
+                                <span class="info-value">1.0.0</span>
+                            </li>
+                            <li>
+                                <span class="info-label">Base de datos:</span>
+                                <span class="info-value">SQLite (Persistente)</span>
+                            </li>
+                            <li>
+                                <span class="info-label">API Externa:</span>
+                                <span class="info-value">apisperu.com</span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <!-- Modal para nuevo token -->
+        <div id="token-modal" class="modal hidden">
+            <div class="modal-overlay"></div>
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3>Crear Nuevo Token</h3>
+                    <button class="modal-close" id="modal-close">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <line x1="18" y1="6" x2="6" y2="18"/>
+                            <line x1="6" y1="6" x2="18" y2="18"/>
+                        </svg>
+                    </button>
+                </div>
+                <form id="token-form">
+                    <div class="form-group">
+                        <label for="token-name">Nombre del Token *</label>
+                        <input type="text" id="token-name" placeholder="Ej: App Móvil, Sistema Web" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="token-desc">Descripción (opcional)</label>
+                        <input type="text" id="token-desc" placeholder="Descripción del uso del token">
+                    </div>
+                    <div class="modal-actions">
+                        <button type="button" class="btn btn-secondary" id="modal-cancel">Cancelar</button>
+                        <button type="submit" class="btn btn-primary">Crear Token</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Toast notifications -->
+        <div id="toast-container" class="toast-container"></div>
+    </div>
+
+    <script src="/static/js/app.js"></script>
+</body>
+</html>

@@ -1,0 +1,33 @@
+version: '3.8'
+
+services:
+  dni-lookup:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: dni-lookup-api
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    volumes:
+      # Persistir base de datos SQLite
+      - dni_data:/app/data
+    environment:
+      - DATABASE_URL=sqlite:///./data/personas.db
+      - ADMIN_USER=${ADMIN_USER:-admin}
+      - ADMIN_PASSWORD=${ADMIN_PASSWORD:-escolastica123}
+      - APISPERU_TOKEN=${APISPERU_TOKEN:-}
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+    labels:
+      - "dokploy.enable=true"
+      - "dokploy.http.routers.dni-lookup.entrypoints=websecure"
+      - "dokploy.http.routers.dni-lookup.tls=true"
+
+volumes:
+  dni_data:
+    driver: local
