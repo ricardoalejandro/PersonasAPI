@@ -347,8 +347,12 @@ async function getTokens() {
             return [];
         }
 
-        const data = await response.json();
-        return data.tokens || [];
+        const result = await response.json();
+        // Extraer tokens de la estructura estandarizada
+        if (result.success && result.data && result.data.tokens) {
+            return result.data.tokens;
+        }
+        return result.tokens || [];
     } catch (error) {
         console.error('Error:', error);
         return [];
