@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   dni-lookup:
     build:
@@ -16,17 +14,16 @@ services:
       - DATABASE_URL=sqlite:///./data/personas.db
       - ADMIN_USER=${ADMIN_USER:-admin}
       - ADMIN_PASSWORD=${ADMIN_PASSWORD:-escolastica123}
+      - DB_BACKUP_USER=${DB_BACKUP_USER:-backup_admin}
+      - DB_BACKUP_PASSWORD=${DB_BACKUP_PASSWORD:-backup_secure_123}
       - APISPERU_TOKEN=${APISPERU_TOKEN:-}
+      - RATE_LIMIT_PER_IP=${RATE_LIMIT_PER_IP:-200}
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
       interval: 30s
       timeout: 10s
       retries: 3
       start_period: 10s
-    labels:
-      - "dokploy.enable=true"
-      - "dokploy.http.routers.dni-lookup.entrypoints=websecure"
-      - "dokploy.http.routers.dni-lookup.tls=true"
 
 volumes:
   dni_data:

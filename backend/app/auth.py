@@ -40,7 +40,7 @@ def verificar_admin(credentials: HTTPBasicCredentials = Depends(security)) -> bo
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Credenciales de administrador incorrectas",
-            headers={"WWW-Authenticate": "Basic"},
+            # No enviar WWW-Authenticate para evitar popup nativo del navegador
         )
     
     return True
